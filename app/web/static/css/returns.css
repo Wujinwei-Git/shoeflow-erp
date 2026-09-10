@@ -1,0 +1,257 @@
+.returns-body {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px;
+}
+
+.sale-search-row {
+    display: flex;
+    gap: 12px;
+}
+
+.sale-search-row input {
+    flex: 1;
+    height: 52px;
+    padding: 0 16px;
+    border: 2px solid #cad3df;
+    border-radius: 10px;
+    font-size: 17px;
+    outline: none;
+}
+
+.sale-search-row input:focus,
+.return-note textarea:focus,
+.danger-card input:focus,
+.return-quantity:focus {
+    border-color: #2e68e8;
+    box-shadow: 0 0 0 3px rgba(46, 104, 232, 0.12);
+}
+
+.sale-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.sale-header h2 {
+    margin: 5px 0 0;
+    color: #10213b;
+}
+
+.small-label {
+    color: #718096;
+    font-size: 13px;
+}
+
+.sale-status {
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: #08794f;
+    background: #dcfce7;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.sale-status.reversed {
+    color: #9f2727;
+    background: #fee2e2;
+}
+
+.sale-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.sale-summary > div {
+    padding: 16px;
+    border-radius: 10px;
+    background: #f7f9fc;
+}
+
+.sale-summary span {
+    display: block;
+    margin-bottom: 7px;
+    color: #718096;
+    font-size: 13px;
+}
+
+.sale-summary strong {
+    color: #10213b;
+}
+
+.section-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.section-title-row h3 {
+    margin: 0 0 5px;
+    color: #10213b;
+}
+
+.section-title-row p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+.secondary-button {
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #334155;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.return-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.return-table th {
+    padding: 13px 10px;
+    color: #64748b;
+    background: #f7f9fc;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.return-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #e8edf3;
+    color: #26364d;
+}
+
+.return-product strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #10213b;
+}
+
+.return-product span {
+    color: #718096;
+    font-size: 13px;
+}
+
+.return-quantity {
+    width: 88px;
+    height: 38px;
+    padding: 0 9px;
+    border: 1px solid #cad3df;
+    border-radius: 7px;
+    font-size: 14px;
+    outline: none;
+}
+
+.return-quantity:disabled {
+    color: #94a3b8;
+    background: #f1f5f9;
+}
+
+.return-note {
+    display: block;
+    margin-top: 22px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.return-note textarea {
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px;
+    border: 1px solid #cad3df;
+    border-radius: 8px;
+    resize: vertical;
+    font: inherit;
+    outline: none;
+}
+
+.return-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.danger-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px auto;
+    align-items: end;
+    gap: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    background: #fff7f7;
+}
+
+.danger-card h2 {
+    margin: 0 0 7px;
+    color: #991b1b;
+    font-size: 19px;
+}
+
+.danger-card p {
+    margin: 0;
+    color: #7f4848;
+    line-height: 1.6;
+}
+
+.danger-card label {
+    color: #7f1d1d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.danger-card input {
+    width: 100%;
+    height: 43px;
+    margin-top: 8px;
+    padding: 0 11px;
+    border: 1px solid #f0aaaa;
+    border-radius: 8px;
+    outline: none;
+}
+
+.danger-button {
+    height: 43px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    background: #c93434;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.danger-button:hover {
+    background: #aa2828;
+}
+
+.danger-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+@media (max-width: 900px) {
+    .sale-summary,
+    .danger-card {
+        grid-template-columns: 1fr;
+    }
+
+    .sale-search-row,
+    .section-title-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

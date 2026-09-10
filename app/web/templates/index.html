@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>ShoeFlow ERP</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/app.css"
+    >
+</head>
+
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">SF</div>
+
+            <div>
+                <div class="brand-name">ShoeFlow</div>
+                <div class="brand-subtitle">库存经营系统</div>
+            </div>
+        </div>
+
+        <nav class="navigation">
+            <button
+                class="nav-item active"
+                data-view="dashboard"
+                type="button"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>经营首页</span>
+            </button>
+
+
+            <a class="nav-item" href="/inbound">
+                <span class="nav-icon">▣</span>
+                <span>扫码入库</span>
+            </a>
+
+            <a class="nav-item" href="/sales">
+                <span class="nav-icon">◈</span>
+                <span>销售出库</span>
+            </a>
+
+            <a class="nav-item" href="/returns">
+                <span class="nav-icon">↶</span>
+                <span>退货与冲销</span>
+            </a>
+            <a class="nav-item" href="/records">
+                <span class="nav-icon">☷</span>
+                <span>业务记录</span>
+            </a>
+            <a class="nav-item" href="/sku-catalog">
+                <span class="nav-icon">◇</span>
+                <span>商品档案</span>
+            </a>
+            <a class="nav-item" href="/inventory-control">
+                <span class="nav-icon">±</span>
+                <span>库存校正</span>
+            </a>
+
+            <button
+                class="nav-item"
+                data-view="inventory"
+                type="button"
+            >
+                <span class="nav-icon">▦</span>
+                <span>库存查询</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/docs" target="_blank">
+                打开 API 文档
+            </a>
+        </div>
+    </aside>
+
+    <div class="page-shell">
+
+        <header class="topbar">
+            <div>
+                <h1 id="page-title">经营首页</h1>
+                <p id="page-description">
+                    查看当前库存和经营情况
+                </p>
+            </div>
+
+            <div class="topbar-actions">
+                <div class="service-status">
+                    <span class="status-dot"></span>
+                    <span>系统运行中</span>
+                </div>
+
+                <button
+                    id="refresh-button"
+                    class="primary-button"
+                    type="button"
+                >
+                    刷新数据
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <section
+                id="dashboard-view"
+                class="view-panel"
+            >
+                <div class="metric-grid">
+
+                    <article class="metric-card">
+                        <div class="metric-label">
+                            当前库存
+                        </div>
+
+                        <div class="metric-value">
+                            <span id="on-hand-qty">--</span>
+                            <span class="metric-unit">双</span>
+                        </div>
+
+                        <div class="metric-note">
+                            当前实物库存数量
+                        </div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-label">
+                            库存金额
+                        </div>
+
+                        <div
+                            id="inventory-value"
+                            class="metric-value"
+                        >
+                            --
+                        </div>
+
+                        <div class="metric-note">
+                            按移动平均成本计算
+                        </div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-label">
+                            净销售额
+                        </div>
+
+                        <div
+                            id="net-sales-amount"
+                            class="metric-value"
+                        >
+                            --
+                        </div>
+
+                        <div class="metric-note">
+                            已扣除退货和冲销
+                        </div>
+                    </article>
+
+                    <article class="metric-card highlight-card">
+                        <div class="metric-label">
+                            净毛利润
+                        </div>
+
+                        <div
+                            id="net-gross-profit"
+                            class="metric-value"
+                        >
+                            --
+                        </div>
+
+                        <div class="metric-note">
+                            净销售额减净销售成本
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="content-grid">
+
+                    <article class="content-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>销售概况</h2>
+                                <p>全部销售、退货和冲销数据</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>原销售双数</span>
+                                <strong id="gross-units-sold">--</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>退货双数</span>
+                                <strong id="returned-units">--</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>冲销双数</span>
+                                <strong id="reversed-units">--</strong>
+                            </div>
+
+                            <div class="summary-row total-row">
+                                <span>净销售双数</span>
+                                <strong id="net-units-sold">--</strong>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="content-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>金额概况</h2>
+                                <p>销售额、成本与利润</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>原销售额</span>
+                                <strong id="gross-sales-amount">--</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>退货金额</span>
+                                <strong id="return-amount">--</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>净销售成本</span>
+                                <strong id="net-sales-cost">--</strong>
+                            </div>
+
+                            <div class="summary-row total-row">
+                                <span>净毛利润</span>
+                                <strong id="summary-profit">--</strong>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+
+                <article class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>每日经营数据</h2>
+                            <p>按日期查看净销售额与毛利润</p>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>原销售额</th>
+                                <th>退货/冲销</th>
+                                <th>净销售额</th>
+                                <th>净销售成本</th>
+                                <th>净毛利润</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="daily-sales-body">
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    class="empty-cell"
+                                >
+                                    正在加载数据……
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section
+                id="inventory-view"
+                class="view-panel hidden"
+            >
+                <article class="content-card">
+                    <div class="inventory-toolbar">
+                        <div>
+                            <h2>库存明细</h2>
+                            <p>
+                                查询每个 SKU 的库存、成本和库存金额
+                            </p>
+                        </div>
+
+                        <div class="search-box">
+                            <input
+                                id="inventory-search"
+                                type="search"
+                                placeholder="搜索条码、货号、尺码"
+                                autocomplete="off"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>品牌</th>
+                                <th>货号</th>
+                                <th>尺码</th>
+                                <th>条码</th>
+                                <th>状态</th>
+                                <th>库存</th>
+                                <th>平均成本</th>
+                                <th>库存金额</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="inventory-table-body">
+                            <tr>
+                                <td
+                                    colspan="8"
+                                    class="empty-cell"
+                                >
+                                    正在加载库存……
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<div
+    id="toast"
+    class="toast"
+    role="status"
+></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>库存校正与库存流水 - ShoeFlow</title>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="/static/css/sales.css">
+    <link rel="stylesheet" href="/static/css/inventory_control.css">
+</head>
+
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">SF</div>
+
+            <div>
+                <div class="brand-name">ShoeFlow</div>
+                <div class="brand-subtitle">库存经营系统</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a class="nav-item" href="/">
+                <span class="nav-icon">⌂</span>
+                <span>经营首页</span>
+            </a>
+
+            <a class="nav-item" href="/inbound">
+                <span class="nav-icon">▣</span>
+                <span>扫码入库</span>
+            </a>
+
+            <a class="nav-item" href="/sales">
+                <span class="nav-icon">◈</span>
+                <span>销售出库</span>
+            </a>
+
+            <a class="nav-item" href="/returns">
+                <span class="nav-icon">↶</span>
+                <span>退货与冲销</span>
+            </a>
+            <a class="nav-item" href="/records">
+                <span class="nav-icon">☷</span>
+                <span>业务记录</span>
+            </a>
+            <a class="nav-item" href="/sku-catalog">
+                <span class="nav-icon">◇</span>
+                <span>商品档案</span>
+            </a>
+            <a class="nav-item active" href="/inventory-control">
+                <span class="nav-icon">±</span>
+                <span>库存校正</span>
+            </a>
+
+            <a class="nav-item" href="/#inventory">
+                <span class="nav-icon">▦</span>
+                <span>库存查询</span>
+            </a>
+        </nav>
+
+        <a class="api-link" href="/docs" target="_blank">
+            打开 API 文档
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>库存校正与库存流水</h1>
+                <p>扫描商品后手动增加或减少库存，并查看库存变化记录</p>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                系统运行中
+            </div>
+        </header>
+
+        <div class="inventory-control-body">
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div>
+                        <h2>扫描商品</h2>
+                        <p>扫描鞋盒条码，查询商品及当前库存</p>
+                    </div>
+                </div>
+
+                <div class="search-row">
+                    <input
+                        id="barcodeInput"
+                        type="text"
+                        maxlength="64"
+                        autocomplete="off"
+                        placeholder="请扫描或输入鞋盒条码"
+                    >
+
+                    <button
+                        id="searchButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        查询商品
+                    </button>
+                </div>
+            </section>
+
+            <section id="productSection" class="hidden">
+                <div class="inventory-top">
+                    <section class="card product-card">
+                        <div class="card-heading">
+                            <div>
+                                <h2>商品与当前库存</h2>
+                                <p id="productLocalSku">-</p>
+                            </div>
+
+                            <span id="productStatus" class="active-badge">
+                                active
+                            </span>
+                        </div>
+
+                        <div class="product-main">
+                            <div>
+                                <span>商品</span>
+                                <strong id="productName">-</strong>
+                            </div>
+
+                            <div>
+                                <span>条码</span>
+                                <strong id="productBarcode">-</strong>
+                            </div>
+                        </div>
+
+                        <div class="inventory-numbers">
+                            <div class="quantity-card">
+                                <span>当前库存</span>
+                                <strong id="onHandQuantity">0</strong>
+                                <small>双</small>
+                            </div>
+
+                            <div>
+                                <span>移动平均成本</span>
+                                <strong id="averageCost">¥0.00</strong>
+                            </div>
+
+                            <div>
+                                <span>库存金额</span>
+                                <strong id="inventoryValue">¥0.00</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="card correction-card">
+                        <div class="card-heading">
+                            <div>
+                                <h2>手动校正库存</h2>
+                                <p>正数增加库存，负数减少库存</p>
+                            </div>
+                        </div>
+
+                        <label>
+                            数量变化
+                            <div class="quantity-editor">
+                                <button
+                                    id="minusButton"
+                                    type="button"
+                                    class="quantity-button"
+                                >
+                                    −1
+                                </button>
+
+                                <input
+                                    id="quantityChange"
+                                    type="number"
+                                    step="1"
+                                    value="1"
+                                >
+
+                                <button
+                                    id="plusButton"
+                                    type="button"
+                                    class="quantity-button"
+                                >
+                                    +1
+                                </button>
+                            </div>
+                        </label>
+
+                        <label>
+                            校正原因
+                            <select id="correctionReason">
+                                <option value="missed_scan">
+                                    少扫或漏录，需要增加库存
+                                </option>
+
+                                <option value="duplicate_scan">
+                                    多扫或重复录入，需要减少库存
+                                </option>
+                            </select>
+                        </label>
+
+                        <label>
+                            备注
+                            <textarea
+                                id="correctionNote"
+                                rows="3"
+                                maxlength="255"
+                                placeholder="请说明为什么修改库存"
+                            ></textarea>
+                        </label>
+
+                        <div id="correctionPreview" class="correction-preview">
+                            校正后库存：-
+                        </div>
+
+                        <button
+                            id="submitCorrectionButton"
+                            class="primary-button full-button"
+                            type="button"
+                        >
+                            确认校正
+                        </button>
+                    </section>
+                </div>
+
+                <section class="card">
+                    <div class="card-heading">
+                        <div>
+                            <h2>库存流水</h2>
+                            <p>该 SKU 的全部入库、销售、退货、冲销和校正记录</p>
+                        </div>
+
+                        <button
+                            id="refreshMovementsButton"
+                            class="secondary-button"
+                            type="button"
+                        >
+                            刷新流水
+                        </button>
+                    </div>
+
+                    <div id="emptyMovements" class="empty-state hidden">
+                        暂时没有库存流水
+                    </div>
+
+                    <div id="movementsTableWrapper" class="table-wrapper">
+                        <table class="movements-table">
+                            <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>流水类型</th>
+                                <th>数量变化</th>
+                                <th>变化前</th>
+                                <th>变化后</th>
+                                <th>单位成本</th>
+                                <th>关联单号</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="movementsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="/static/js/inventory_control.js"></script>
+</body>
+</html>

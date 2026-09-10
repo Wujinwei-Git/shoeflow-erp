@@ -1,0 +1,233 @@
+.inventory-control-body {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 28px;
+}
+
+.search-row {
+    display: flex;
+    gap: 12px;
+}
+
+.search-row input {
+    flex: 1;
+    height: 52px;
+    padding: 0 16px;
+    border: 2px solid #cad3df;
+    border-radius: 10px;
+    font-size: 18px;
+    outline: none;
+}
+
+.search-row input:focus,
+.correction-card input:focus,
+.correction-card select:focus,
+.correction-card textarea:focus {
+    border-color: #2e68e8;
+    box-shadow: 0 0 0 3px rgba(46, 104, 232, 0.12);
+}
+
+.inventory-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(330px, 0.7fr);
+    align-items: start;
+    gap: 20px;
+}
+
+.active-badge {
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: #08794f;
+    background: #dcfce7;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.product-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.product-main > div,
+.inventory-numbers > div {
+    padding: 16px;
+    border-radius: 10px;
+    background: #f7f9fc;
+}
+
+.product-main span,
+.inventory-numbers span {
+    display: block;
+    margin-bottom: 7px;
+    color: #718096;
+    font-size: 13px;
+}
+
+.product-main strong,
+.inventory-numbers strong {
+    color: #10213b;
+}
+
+.inventory-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.quantity-card {
+    color: #ffffff;
+    background: linear-gradient(135deg, #173b76, #2e68e8) !important;
+}
+
+.quantity-card span,
+.quantity-card strong,
+.quantity-card small {
+    color: #ffffff;
+}
+
+.quantity-card strong {
+    font-size: 32px;
+}
+
+.correction-card label {
+    display: block;
+    margin-bottom: 17px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.correction-card select,
+.correction-card textarea {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid #cad3df;
+    border-radius: 8px;
+    background: #ffffff;
+    font: inherit;
+    outline: none;
+}
+
+.quantity-editor {
+    display: grid;
+    grid-template-columns: 70px 1fr 70px;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.quantity-editor input {
+    width: 100%;
+    height: 43px;
+    padding: 0 10px;
+    border: 1px solid #cad3df;
+    border-radius: 8px;
+    font-size: 17px;
+    text-align: center;
+    outline: none;
+}
+
+.quantity-button {
+    border: 1px solid #b9c9ef;
+    border-radius: 8px;
+    color: #2058cf;
+    background: #edf3ff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.correction-preview {
+    padding: 13px;
+    margin-bottom: 17px;
+    border-radius: 8px;
+    color: #1f55be;
+    background: #edf3ff;
+    font-weight: 700;
+    text-align: center;
+}
+
+.correction-preview.negative {
+    color: #a31919;
+    background: #fff1f2;
+}
+
+.full-button {
+    width: 100%;
+}
+
+.movements-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.movements-table th {
+    padding: 13px 10px;
+    color: #64748b;
+    background: #f7f9fc;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.movements-table td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #e8edf3;
+    color: #26364d;
+    font-size: 14px;
+}
+
+.quantity-positive {
+    color: #078257;
+    font-weight: 700;
+}
+
+.quantity-negative {
+    color: #c42929;
+    font-weight: 700;
+}
+
+.movement-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    color: #334155;
+    background: #eef2f7;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.empty-state {
+    padding: 45px;
+    color: #718096;
+    text-align: center;
+}
+
+.secondary-button {
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #334155;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+    .inventory-top {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .search-row {
+        flex-direction: column;
+    }
+
+    .product-main,
+    .inventory-numbers {
+        grid-template-columns: 1fr;
+    }
+}

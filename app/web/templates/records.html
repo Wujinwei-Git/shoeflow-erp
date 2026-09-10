@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>销售与退货记录 - ShoeFlow</title>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="/static/css/sales.css">
+    <link rel="stylesheet" href="/static/css/records.css">
+</head>
+
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">SF</div>
+
+            <div>
+                <div class="brand-name">ShoeFlow</div>
+                <div class="brand-subtitle">库存经营系统</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a class="nav-item" href="/">
+                <span class="nav-icon">⌂</span>
+                <span>经营首页</span>
+            </a>
+
+            <a class="nav-item" href="/inbound">
+                <span class="nav-icon">▣</span>
+                <span>扫码入库</span>
+            </a>
+
+            <a class="nav-item" href="/sales">
+                <span class="nav-icon">◈</span>
+                <span>销售出库</span>
+            </a>
+
+            <a class="nav-item" href="/returns">
+                <span class="nav-icon">↶</span>
+                <span>退货与冲销</span>
+            </a>
+
+            <a class="nav-item active" href="/records">
+                <span class="nav-icon">☷</span>
+                <span>业务记录</span>
+            </a>
+            <a class="nav-item" href="/sku-catalog">
+                <span class="nav-icon">◇</span>
+                <span>商品档案</span>
+            </a>
+            <a class="nav-item" href="/inventory-control">
+                <span class="nav-icon">±</span>
+                <span>库存校正</span>
+            </a>
+
+            <a class="nav-item" href="/#inventory">
+                <span class="nav-icon">▦</span>
+                <span>库存查询</span>
+            </a>
+        </nav>
+
+        <a class="api-link" href="/docs" target="_blank">
+            打开 API 文档
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>销售与退货记录</h1>
+                <p>查询历史销售单、退货单和商品明细</p>
+            </div>
+
+            <button
+                id="refreshButton"
+                class="primary-button"
+                type="button"
+            >
+                刷新记录
+            </button>
+        </header>
+
+        <div class="records-body">
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <section class="record-tools">
+                <div class="record-tabs">
+                    <button
+                        class="record-tab active"
+                        data-tab="sales"
+                        type="button"
+                    >
+                        销售记录
+                        <span id="salesCount">0</span>
+                    </button>
+
+                    <button
+                        class="record-tab"
+                        data-tab="returns"
+                        type="button"
+                    >
+                        退货记录
+                        <span id="returnsCount">0</span>
+                    </button>
+                </div>
+
+                <input
+                    id="searchInput"
+                    class="record-search"
+                    type="search"
+                    placeholder="输入销售单号搜索"
+                >
+            </section>
+
+            <section id="salesPanel" class="record-panel">
+                <div class="record-table-wrapper">
+                    <table class="record-table">
+                        <thead>
+                        <tr>
+                            <th>销售单号</th>
+                            <th>销售时间</th>
+                            <th>销售数量</th>
+                            <th>销售金额</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="salesBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="salesEmpty" class="empty-record hidden">
+                    暂时没有销售记录
+                </div>
+            </section>
+
+            <section id="returnsPanel" class="record-panel hidden">
+                <div class="record-table-wrapper">
+                    <table class="record-table">
+                        <thead>
+                        <tr>
+                            <th>退货单号</th>
+                            <th>原销售单号</th>
+                            <th>退货时间</th>
+                            <th>退货数量</th>
+                            <th>退款金额</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="returnsBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="returnsEmpty" class="empty-record hidden">
+                    暂时没有退货记录
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div id="detailModal" class="detail-modal hidden">
+    <div class="detail-backdrop" data-close-modal></div>
+
+    <section class="detail-card">
+        <div class="detail-header">
+            <div>
+                <span id="detailType">业务单据</span>
+                <h2 id="detailNumber">-</h2>
+            </div>
+
+            <button
+                id="closeModalButton"
+                class="close-button"
+                type="button"
+                aria-label="关闭"
+            >
+                ×
+            </button>
+        </div>
+
+        <div id="detailSummary" class="detail-summary"></div>
+
+        <h3>商品明细</h3>
+
+        <div class="record-table-wrapper">
+            <table class="record-table">
+                <thead>
+                <tr>
+                    <th>商品</th>
+                    <th>数量</th>
+                    <th>单价</th>
+                    <th>金额</th>
+                </tr>
+                </thead>
+
+                <tbody id="detailItemsBody"></tbody>
+            </table>
+        </div>
+
+        <div id="detailActions" class="detail-actions"></div>
+    </section>
+</div>
+
+<script src="/static/js/records.js"></script>
+</body>
+</html>

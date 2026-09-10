@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>退货与销售冲销 - ShoeFlow</title>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="/static/css/sales.css">
+    <link rel="stylesheet" href="/static/css/returns.css">
+</head>
+
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">SF</div>
+
+            <div>
+                <div class="brand-name">ShoeFlow</div>
+                <div class="brand-subtitle">库存经营系统</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a class="nav-item" href="/">
+                <span class="nav-icon">⌂</span>
+                <span>经营首页</span>
+            </a>
+
+            <a class="nav-item" href="/inbound">
+                <span class="nav-icon">▣</span>
+                <span>扫码入库</span>
+            </a>
+
+            <a class="nav-item" href="/sales">
+                <span class="nav-icon">◈</span>
+                <span>销售出库</span>
+            </a>
+
+            <a class="nav-item active" href="/returns">
+                <span class="nav-icon">↶</span>
+                <span>退货与冲销</span>
+            </a>
+            <a class="nav-item" href="/records">
+                <span class="nav-icon">☷</span>
+                <span>业务记录</span>
+            </a>
+            <a class="nav-item" href="/sku-catalog">
+                <span class="nav-icon">◇</span>
+                <span>商品档案</span>
+            </a>
+            <a class="nav-item" href="/inventory-control">
+                <span class="nav-icon">±</span>
+                <span>库存校正</span>
+            </a>
+            <a class="nav-item" href="/#inventory">
+                <span class="nav-icon">▦</span>
+                <span>库存查询</span>
+            </a>
+        </nav>
+
+        <a class="api-link" href="/docs" target="_blank">
+            打开 API 文档
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>退货与销售冲销</h1>
+                <p>查询原销售单，办理部分退货、整单退货或销售冲销</p>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                系统运行中
+            </div>
+        </header>
+
+        <div class="returns-body">
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div>
+                        <h2>查询原销售单</h2>
+                        <p>输入销售完成后生成的销售单号</p>
+                    </div>
+                </div>
+
+                <div class="sale-search-row">
+                    <input
+                        id="saleNumberInput"
+                        type="text"
+                        maxlength="64"
+                        autocomplete="off"
+                        placeholder="例如：SALE-20260903..."
+                    >
+
+                    <button
+                        id="searchButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        查询销售单
+                    </button>
+                </div>
+            </section>
+
+            <section id="saleCard" class="card hidden">
+                <div class="sale-header">
+                    <div>
+                        <span class="small-label">销售单号</span>
+                        <h2 id="saleNumberText">-</h2>
+                    </div>
+
+                    <span id="saleStatus" class="sale-status">-</span>
+                </div>
+
+                <div class="sale-summary">
+                    <div>
+                        <span>销售时间</span>
+                        <strong id="saleCreatedAt">-</strong>
+                    </div>
+
+                    <div>
+                        <span>原销售数量</span>
+                        <strong id="saleQuantity">0 双</strong>
+                    </div>
+
+                    <div>
+                        <span>原销售金额</span>
+                        <strong id="saleAmount">¥0.00</strong>
+                    </div>
+                </div>
+
+                <div class="section-title-row">
+                    <div>
+                        <h3>选择退货商品</h3>
+                        <p>退几双就在“本次退货”中填写几双</p>
+                    </div>
+
+                    <button
+                        id="selectAllButton"
+                        class="secondary-button"
+                        type="button"
+                    >
+                        填入全部可退数量
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="return-table">
+                        <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>原销售数量</th>
+                            <th>已经退货</th>
+                            <th>剩余可退</th>
+                            <th>本次退货</th>
+                            <th>原成交价</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="returnItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <label class="return-note">
+                    退货备注（可选）
+                    <textarea
+                        id="returnNote"
+                        rows="3"
+                        maxlength="255"
+                        placeholder="例如：顾客尺码不合适"
+                    ></textarea>
+                </label>
+
+                <div class="return-actions">
+                    <button
+                        id="submitReturnButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        确认退货
+                    </button>
+                </div>
+            </section>
+
+            <section id="reversalCard" class="danger-card hidden">
+                <div>
+                    <h2>整单销售冲销</h2>
+                    <p>
+                        仅用于整笔销售录错。冲销会恢复该销售单扣减的库存，
+                        并生成反向流水。
+                    </p>
+                </div>
+
+                <label>
+                    冲销原因
+                    <input
+                        id="reversalReason"
+                        type="text"
+                        maxlength="255"
+                        placeholder="例如：整笔销售录入错误"
+                    >
+                </label>
+
+                <button
+                    id="reverseButton"
+                    class="danger-button"
+                    type="button"
+                >
+                    冲销整张销售单
+                </button>
+            </section>
+
+            <section id="successCard" class="card success-card hidden">
+                <div class="success-icon">✓</div>
+                <h2 id="successTitle">操作成功</h2>
+                <p id="successText"></p>
+
+                <div id="resultNumber" class="sale-number"></div>
+
+                <div class="success-actions">
+                    <button
+                        id="continueButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        继续处理
+                    </button>
+
+                    <a class="secondary-link" href="/">
+                        返回经营首页
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="/static/js/returns.js"></script>
+</body>
+</html>

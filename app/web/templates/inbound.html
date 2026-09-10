@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫码入库 - ShoeFlow</title>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="/static/css/inbound.css">
+</head>
+
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">SF</div>
+            <div>
+                <div class="brand-name">ShoeFlow</div>
+                <div class="brand-subtitle">库存经营系统</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a class="nav-item" href="/">
+                <span>⌂</span>
+                <span>经营首页</span>
+            </a>
+
+            <a class="nav-item active" href="/inbound">
+                <span>▣</span>
+                <span>扫码入库</span>
+            </a>
+            <a class="nav-item" href="/sales">
+                <span class="nav-icon">◈</span>
+                <span>销售出库</span>
+            </a>
+            <a class="nav-item" href="/returns">
+                <span class="nav-icon">↶</span>
+                <span>退货与冲销</span>
+            </a>
+            <a class="nav-item" href="/records">
+                <span class="nav-icon">☷</span>
+                <span>业务记录</span>
+            </a>
+            <a class="nav-item" href="/sku-catalog">
+                <span class="nav-icon">◇</span>
+                <span>商品档案</span>
+            </a>
+            <a class="nav-item" href="/inventory-control">
+                <span class="nav-icon">±</span>
+                <span>库存校正</span>
+            </a>
+            <a class="nav-item" href="/#inventory">
+                <span>▦</span>
+                <span>库存查询</span>
+            </a>
+        </nav>
+
+        <a class="api-link" href="/docs" target="_blank">打开 API 文档</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>扫码入库</h1>
+                <p>扫描鞋盒条码，确认商品资料并填写本次进货成本</p>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                系统运行中
+            </div>
+        </header>
+
+        <section class="page-body">
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <section class="card scan-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>1. 扫描鞋盒条码</h2>
+                        <p>扫码枪通常会自动输入条码并发送回车</p>
+                    </div>
+                </div>
+
+                <div class="barcode-row">
+                    <input
+                        id="barcodeInput"
+                        type="text"
+                        maxlength="64"
+                        autocomplete="off"
+                        placeholder="请扫描条码，或者手动输入条码"
+                    >
+                    <button id="searchButton" class="primary-button" type="button">
+                        查询商品
+                    </button>
+                </div>
+            </section>
+
+            <section id="skuResultCard" class="card hidden">
+                <div class="card-heading">
+                    <div>
+                        <h2>2. 商品资料</h2>
+                        <p>该条码已经存在于 SKU 数据库</p>
+                    </div>
+                    <span class="found-badge">已匹配</span>
+                </div>
+
+                <div class="sku-grid">
+                    <div class="info-field">
+                        <span>内部 SKU</span>
+                        <strong id="skuLocalSku">-</strong>
+                    </div>
+
+                    <div class="info-field">
+                        <span>条码</span>
+                        <strong id="skuBarcode">-</strong>
+                    </div>
+
+                    <div class="info-field">
+                        <span>品牌</span>
+                        <strong id="skuBrand">-</strong>
+                    </div>
+
+                    <div class="info-field">
+                        <span>货号</span>
+                        <strong id="skuArticleNumber">-</strong>
+                    </div>
+
+                    <div class="info-field">
+                        <span>尺码</span>
+                        <strong id="skuSize">-</strong>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <section id="manualSkuCard" class="card hidden">
+                <div class="card-heading">
+                    <div>
+                        <h2>2. 首次扫码补录</h2>
+                        <p>数据库中没有该条码，请人工填写商品资料</p>
+                    </div>
+                    <span class="manual-badge">需要补录</span>
+                </div>
+
+                <div class="form-grid">
+                    <label>
+                        条码
+                        <input id="manualBarcode" type="text" readonly>
+                    </label>
+
+                    <label>
+                        品牌
+                        <input id="manualBrand" type="text" maxlength="100"
+                               placeholder="例如：NIKE">
+                    </label>
+
+                    <label>
+                        货号
+                        <input id="manualArticleNumber" type="text" maxlength="100"
+                               placeholder="例如：DD1391-100">
+                    </label>
+
+                    <label>
+                        尺码
+                        <input id="manualSize" type="text" maxlength="50"
+                               placeholder="例如：EUR 42">
+                    </label>
+                    
+                </div>
+
+                <button id="createSkuButton" class="primary-button" type="button">
+                    创建 SKU
+                </button>
+            </section>
+
+            <section id="inboundCard" class="card hidden">
+                <div class="card-heading">
+                    <div>
+                        <h2>3. 填写入库信息</h2>
+                        <p>进货成本由你手动填写，不会从条码中获取</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <label>
+                        入库数量
+                        <input id="inboundQuantity" type="number" min="1"
+                               step="1" value="1">
+                    </label>
+
+                    <label>
+                        本次单件成本
+                        <input id="inboundUnitCost" type="number" min="0"
+                               step="0.01" placeholder="例如：600.00">
+                    </label>
+
+                    <label>
+                        参考单号（可选）
+                        <input id="inboundReferenceNo" type="text"
+                               maxlength="100" placeholder="例如：PO-20260903-001">
+                    </label>
+
+                    <label class="full-width">
+                        备注（可选）
+                        <input id="inboundNote" type="text"
+                               maxlength="255" placeholder="例如：门店扫码入库">
+                    </label>
+                </div>
+
+                <div class="action-row">
+                    <button id="resetButton" class="secondary-button" type="button">
+                        重新扫描
+                    </button>
+
+                    <button id="inboundButton" class="primary-button" type="button">
+                        确认入库
+                    </button>
+                </div>
+            </section>
+
+            <section id="successCard" class="card success-card hidden">
+                <div class="success-icon">✓</div>
+                <h2>入库成功</h2>
+                <p id="successText"></p>
+
+                <div class="success-actions">
+                    <button id="continueButton" class="primary-button" type="button">
+                        继续扫描下一双
+                    </button>
+
+                    <a href="/#inventory" class="secondary-link">查看库存</a>
+                </div>
+            </section>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/inbound.js"></script>
+</body>
+</html>
