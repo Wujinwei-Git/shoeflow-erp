@@ -213,6 +213,7 @@ def test_sale_preview_calculates_profit_without_writing() -> None:
     assert set(data["_offered_tool_names"]) == {
         "search_skus",
         "query_inventory",
+        "search_erp_manual",
         "preview_sale",
     }
 

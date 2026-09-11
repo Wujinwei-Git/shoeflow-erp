@@ -326,6 +326,7 @@ def test_agent_only_offers_query_and_preview_tools() -> None:
     assert set(fake_model.offered_tool_names) == {
         "search_skus",
         "query_inventory",
+        "search_erp_manual",
         "preview_sale",
     }
     assert "confirm_sale" not in fake_model.offered_tool_names

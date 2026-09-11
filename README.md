@@ -14,6 +14,8 @@ ShoeFlow AI V1.0 的 ERP 后端基础工程。ERP 是库存、成本、销售和
 - 基础自动化测试
 - DeepSeek Tool Calling 经营 Agent
 - 自然语言 SKU 与实时库存查询
+- ERP 操作手册 RAG 检索与来源引用
+- TF-IDF 向量余弦、BM25 与标题相关度融合检索
 - 自然语言销售出库预览、销售额/成本/毛利润计算
 - 持久化待确认操作，人工确认后调用原销售服务扣库存
 - 重复确认防重、15 分钟过期、库存变化时强制重新预览
@@ -62,6 +64,10 @@ DEEPSEEK_API_KEY=你的DeepSeek_API_Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-flash
 AGENT_ACTION_EXPIRE_MINUTES=15
+RAG_KNOWLEDGE_DIR=knowledge/erp_manual
+RAG_DEFAULT_TOP_K=3
+RAG_MIN_SCORE=0.08
+RAG_MAX_CHUNK_CHARS=1400
 ```
 
 不要把 DeepSeek API Key 写入移动端代码，也不要提交 `.env`。
@@ -116,3 +122,11 @@ shoeflow-erp/
 ```
 
 当前 Agent 已完成第二阶段的单 SKU 销售安全写入。入库、退货、库存校正和删除仍未向模型开放；后续可沿用同一套“预览 → 人工确认 → 业务服务执行”机制逐项增加。
+
+## ERP 操作手册 RAG
+
+第四阶段增加了本地知识库目录 `knowledge/erp_manual`。系统启动后会读取其中的 Markdown 文档，按二级标题切分知识片段，并建立无需额外模型下载的混合检索索引：TF-IDF 稀疏向量余弦用于整体相关性，BM25 用于关键词相关性，标题相关度用于提升明确章节命中。
+
+当用户询问操作步骤、字段含义、业务规则或故障处理时，DeepSeek 调用 `search_erp_manual`。工具把相关片段返回给模型，回答同时在 `sources` 字段返回文档标题、章节、摘要和相关度。实时库存仍由数据库查询工具提供，销售仍执行“预览 → 人工确认”，RAG 本身没有业务写入权限。
+
+修改或新增知识文档后，检索索引会根据文件修改时间自动重建，不需要数据库迁移。正式维护时应确保手册内容与实际代码一致。

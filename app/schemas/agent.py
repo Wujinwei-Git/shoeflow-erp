@@ -99,6 +99,36 @@ class AgentQueryArguments(BaseModel):
         return cleaned_value or None
 
 
+class AgentKnowledgeQueryArguments(BaseModel):
+    """ERP 操作手册检索工具参数。"""
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+
+    query: str = Field(
+        min_length=1,
+        max_length=500,
+        description="需要从 ERP 操作手册中检索的问题",
+    )
+    limit: int = Field(
+        default=3,
+        ge=1,
+        le=5,
+        description="最多返回的知识片段数量",
+    )
+
+    @field_validator("query")
+    @classmethod
+    def clean_query(cls, value: str) -> str:
+        cleaned_value = value.strip()
+
+        if not cleaned_value:
+            raise ValueError("检索问题不能为空")
+
+        return cleaned_value
+
+
 class AgentSalePreviewArguments(BaseModel):
     """自然语言销售预览工具参数。"""
 
@@ -199,6 +229,19 @@ class AgentToolResultRead(BaseModel):
     data: dict[str, Any]
 
 
+class AgentKnowledgeSourceRead(BaseModel):
+    """一次 RAG 回答引用的知识来源。"""
+
+    source_id: str
+    document_title: str
+    section_title: str
+    excerpt: str
+    score: float = Field(
+        ge=0,
+        le=1,
+    )
+
+
 class AgentActionRead(BaseModel):
     """需要用户人工确认的 Agent 业务操作。"""
 
@@ -223,6 +266,9 @@ class AgentChatData(BaseModel):
         default_factory=list,
     )
     tool_results: list[AgentToolResultRead] = Field(
+        default_factory=list,
+    )
+    sources: list[AgentKnowledgeSourceRead] = Field(
         default_factory=list,
     )
     pending_action: AgentActionRead | None = None
